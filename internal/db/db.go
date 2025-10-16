@@ -41,6 +41,21 @@ func InitDB(path string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to create table - %v", err)
 	}
 
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM rates").Scan(&count)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check records %v", err)
+	}
+
+	if count == 0 {
+		log.Println("DB is empty, seeding with test data...")
+		if err := seedRates(db); err != nil {
+			return nil, fmt.Errorf("failed to seed data - %v", err)
+		}
+	} else {
+		log.Printf("Connect to databse is done, has %d records", count)
+	}
+
 	return db, nil
 }
 

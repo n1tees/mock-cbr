@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"mock-cbr/config"
+	"mock-cbr/internal/config"
 	"mock-cbr/internal/db"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +20,7 @@ var (
 
 func main() {
 
+	// config
 	config.LoadEnv()
 	cfg := config.GetConfig()
 
@@ -59,12 +60,12 @@ func main() {
 
 	// server
 	serv := &http.Server{
-		Addr:    addres,
+		Addr:    cfg.ServPort,
 		Handler: router,
 	}
 
 	go func() {
-		log.Printf("mock service is running, port - %s, version - %s", addres, version)
+		log.Printf("mock service is running, port - %s, version - %s", cfg.ServPort, cfg.ServVersion)
 
 		if err := serv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 
@@ -73,6 +74,7 @@ func main() {
 		}
 	}()
 
+	// gracefull shutt down
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -81,7 +83,7 @@ func main() {
 
 	shuttingDown = true
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeSD)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.GracePeriod)
 	defer cancel()
 
 	if err := serv.Shutdown(ctx); err != nil {

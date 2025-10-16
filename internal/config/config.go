@@ -29,9 +29,9 @@ func LoadEnv() {
 	if os.IsNotExist(statErr) {
 		log.Fatalf(".env not found by path - %s", absPath)
 	} else if statErr != nil {
-		log.Fatalf("Error when trying to access .env: %v", statErr)
+		log.Fatalf("Error when trying to access .env - %v", statErr)
 	} else {
-		log.Printf(".env файл найден по пути: %s\n", absPath)
+		log.Printf(".env was find by path - %s\n", absPath)
 	}
 
 	loadErr := godotenv.Load(envPath)
@@ -39,7 +39,7 @@ func LoadEnv() {
 		log.Fatalf("Failed to load .env - (%s): %v", absPath, loadErr)
 	}
 
-	log.Println(".env succesfully load.")
+	log.Println(".env succesfully load")
 
 }
 
@@ -52,14 +52,14 @@ func GetConfig() *Config {
 
 	graceSec, err := strconv.Atoi(graceStr)
 	if err != nil {
-		log.Fatalf("Invalid GRACE_PERIOD: %v", err)
+		log.Fatalf("Invalid GRACE_PERIOD - %v", err)
 	}
 
 	cfg := Config{
 		ServVersion:  tryGetOrSetDefault("SERV_VERSION", "0.1.0"),
 		ServPort:     tryGetOrSetDefault("SERV_PORT", ":8080"),
 		GracePeriod:  time.Duration(graceSec) * time.Second,
-		DatabasePath: tryGetOrSetDefault("DP_PATH", "db/rates.db"),
+		DatabasePath: tryGetOrSetDefault("DB_PATH", "db/rates.db"),
 	}
 
 	return &cfg
