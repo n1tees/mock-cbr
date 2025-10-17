@@ -10,6 +10,7 @@ import (
 
 	"mock-cbr/internal/config"
 	"mock-cbr/internal/db"
+	"mock-cbr/internal/handlers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,13 +50,7 @@ func main() {
 	})
 
 	router.GET("/scripts/XML_daily.asp", func(c *gin.Context) {
-		date := c.Query("date_req")
-		if date == "" {
-			c.String(http.StatusBadRequest, "missing date_req")
-			return
-		} else {
-			c.JSON(http.StatusOK, gin.H{"status": "There will be a sequel here"})
-		}
+		handlers.RateHandler(c, database)
 	})
 
 	// server
