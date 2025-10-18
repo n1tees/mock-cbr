@@ -6,7 +6,11 @@ import (
 
 	"mock-cbr/internal/handlers"
 
+	_ "mock-cbr/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var shuttingDown = false
@@ -33,12 +37,14 @@ func SetupRouter(db *sql.DB) *gin.Engine {
 
 	// Routes
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "working"})
+		handlers.HealthCheck(c)
 	})
 
 	r.GET("/scripts/XML_daily.asp", func(c *gin.Context) {
 		handlers.RateHandler(c, db)
 	})
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
 }

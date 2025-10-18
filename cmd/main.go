@@ -9,6 +9,9 @@ import (
 	"mock-cbr/internal/server"
 )
 
+// @title MOCK-CBR API
+// @version 1.0
+// @description Mock сервис для имитации API Центрального Банка России
 func main() {
 
 	// config

@@ -1,0 +1,49 @@
+info:
+  contact: {}
+  description: Mock сервис для имитации API Центрального Банка России
+  title: MOCK-CBR API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      description: Returns status OK
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health check
+      tags:
+      - system
+  /scripts/XML_daily.asp:
+    get:
+      consumes:
+      - application/json
+      description: Returns XML with currency rates for given date
+      parameters:
+      - description: Date in DD/MM/YYYY
+        in: query
+        name: date_req
+        required: true
+        type: string
+      produces:
+      - text/xml
+      responses:
+        "200":
+          description: XML data
+          schema:
+            type: string
+        "400":
+          description: invalid date format
+          schema:
+            type: string
+        "404":
+          description: data not found
+          schema:
+            type: string
+      summary: Get currency rates
+      tags:
+      - rates
+swagger: "2.0"

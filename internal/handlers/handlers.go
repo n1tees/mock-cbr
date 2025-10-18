@@ -11,6 +11,17 @@ import (
 //Я сгенерил в бд курс валют на 2 года
 //Логика ответа - на четные года вытаскивать из 24 года, нечет - 23
 
+// RateHandler godoc
+// @Summary      Get currency rates
+// @Description  Returns XML with currency rates for given date
+// @Tags         rates
+// @Accept       json
+// @Produce      xml
+// @Param        date_req  query  string  true  "Date in DD/MM/YYYY"
+// @Success      200  {string}  string "XML data"
+// @Failure      400  {string}  string "invalid date format"
+// @Failure      404  {string}  string "data not found"
+// @Router       /scripts/XML_daily.asp [get]
 func RateHandler(c *gin.Context, db *sql.DB) {
 	date := c.Query("date_req")
 	if date == "" {
@@ -52,4 +63,14 @@ func RateHandler(c *gin.Context, db *sql.DB) {
 
 	c.Header("Content-Type", "application/xml; charset=utf-8")
 	c.String(http.StatusOK, xml)
+}
+
+// HealthCheck godoc
+// @Summary      Health check
+// @Description  Returns status OK
+// @Tags         system
+// @Success      200  {object}  map[string]string
+// @Router       /health [get]
+func HealthCheck(c *gin.Context) {
+	c.JSON(200, gin.H{"status": "ok"})
 }
