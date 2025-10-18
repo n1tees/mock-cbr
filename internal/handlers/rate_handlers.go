@@ -11,7 +11,7 @@ import (
 //Я сгенерил в бд курс валют на 2 года
 //Логика ответа - на четные года вытаскивать из 24 года, нечет - 23
 
-func RateHandler(c *gin.Context, dbConn *sql.DB) {
+func RateHandler(c *gin.Context, db *sql.DB) {
 	date := c.Query("date_req")
 	if date == "" {
 		c.String(http.StatusBadRequest, "missing date_req")
@@ -24,18 +24,24 @@ func RateHandler(c *gin.Context, dbConn *sql.DB) {
 		return
 	}
 
+	minDate, _ := time.Parse("02/01/2006", "01/07/1992")
+	if reqDate.After(time.Now()) || reqDate.Before(minDate) {
+		c.String(http.StatusNotFound, "no data for future date: %s", date)
+		return
+	}
+
 	var lookupYear int
 	if reqDate.Year()%2 == 0 {
 		lookupYear = 2024
 	} else {
-		lookupYear = 2023
+		lookupYear = 2025
 	}
 
 	normalized := time.Date(lookupYear, reqDate.Month(), reqDate.Day(), 0, 0, 0, 0, time.UTC)
 	formatted := normalized.Format("02/01/2006")
 
 	var xml string
-	err = dbConn.QueryRow("SELECT XML FROM rates WHERE date = ?", formatted).Scan(&xml)
+	err = db.QueryRow("SELECT XML FROM rates WHERE date = ?", formatted).Scan(&xml)
 	if err == sql.ErrNoRows {
 		c.String(http.StatusNotFound, "no data for date: %s", formatted)
 		return

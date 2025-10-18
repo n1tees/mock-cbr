@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	_ "modernc.org/sqlite"
 )
@@ -49,7 +50,11 @@ func InitDB(path string) (*sql.DB, error) {
 
 	if count == 0 {
 		log.Println("DB is empty, seeding with test data...")
-		if err := seedRates(db); err != nil {
+
+		start, _ := time.Parse("02/01/2006", "01/01/2024")
+		end, _ := time.Parse("02/01/2006", "31/12/2025")
+
+		if err := SeedRates(db, start, end); err != nil {
 			return nil, fmt.Errorf("failed to seed data - %v", err)
 		}
 	} else {
